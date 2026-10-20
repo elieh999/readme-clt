@@ -15,3 +15,12 @@ def test_fix_is_dry_run_then_applies(tmp_path: Path) -> None:
     assert path.read_text(encoding="utf-8") == original
     language_fixes(path, apply=True)
     assert "```python" in path.read_text(encoding="utf-8")
+
+
+def test_fix_preserves_crlf_line_endings(tmp_path: Path) -> None:
+    path = tmp_path / "README.md"
+    path.write_bytes(b"# Demo\r\n```pyhton\r\nprint('ok')\r\n```\r\n")
+
+    language_fixes(path, apply=True)
+
+    assert path.read_bytes() == b"# Demo\r\n```python\r\nprint('ok')\r\n```\r\n"

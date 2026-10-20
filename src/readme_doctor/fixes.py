@@ -21,7 +21,8 @@ class FixResult:
 
 
 def language_fixes(path: Path, *, apply: bool = False) -> FixResult:
-    original = path.read_text(encoding="utf-8")
+    with path.open(encoding="utf-8", newline="") as stream:
+        original = stream.read()
     document = parse_markdown(path, set(RULES))
     lines = original.splitlines(keepends=True)
     changed = list(lines)
@@ -53,5 +54,5 @@ def language_fixes(path: Path, *, apply: bool = False) -> FixResult:
         )
     )
     if apply and updated != original:
-        path.write_text(updated, encoding="utf-8")
+        path.write_text(updated, encoding="utf-8", newline="")
     return FixResult(path, updated != original, diff)
