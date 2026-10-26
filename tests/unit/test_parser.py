@@ -116,3 +116,15 @@ def test_suppressions_and_unknown_rules(tmp_path: Path) -> None:
     assert document.is_suppressed("RD015", 2)
     assert not document.is_suppressed("RD015", 4)
     assert document.suppression_errors == [(5, "RD999")]
+
+
+def test_disable_line_applies_only_to_the_following_line(tmp_path: Path) -> None:
+    path = tmp_path / "README.md"
+    path.write_text(
+        "<!-- readme-doctor-disable-line RD015 -->\nTODO ignored\nTODO reported\n",
+        encoding="utf-8",
+    )
+    document = parse_markdown(path, set(RULES))
+    assert document.is_suppressed("RD015", 2)
+    assert not document.is_suppressed("RD015", 1)
+    assert not document.is_suppressed("RD015", 3)

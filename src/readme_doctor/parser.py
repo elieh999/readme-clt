@@ -144,7 +144,7 @@ def _build_suppressions(document: MarkdownDocument, known_rules: set[str]) -> No
         r"<!--\s*readme-doctor-(disable|enable)(?:-line)?\s+([A-Z]{2}\d{3})\s*-->"
     )
     for number, raw_line in enumerate(document.text.splitlines(), start=1):
-        document.suppressions[number] = set(disabled)
+        document.suppressions.setdefault(number, set()).update(disabled)
         for action, rule_id in disable_pattern.findall(raw_line):
             if rule_id not in known_rules:
                 document.suppression_errors.append((number, rule_id))
