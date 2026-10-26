@@ -373,3 +373,14 @@ def test_remote_links_are_not_treated_as_local_paths(tmp_path: Path) -> None:
         "[mail](mailto:team@example.com)\n[phone](tel:+15550100)\n" + SECTIONS,
     )
     assert "RD002" not in ids(tmp_path)
+
+
+def test_cross_file_link_to_an_explicit_anchor_is_valid(tmp_path: Path) -> None:
+    (tmp_path / "docs").mkdir()
+    write(tmp_path / "docs", "guide.md", '<a id="manual-setup"></a>\n\nSetup details.\n')
+    write(
+        tmp_path,
+        "README.md",
+        "# Demo\n\n[Setup details](docs/guide.md#manual-setup)\n" + SECTIONS,
+    )
+    assert "RD003" not in ids(tmp_path)

@@ -126,7 +126,9 @@ def check_links(context: CheckContext) -> list[Finding]:
                 from readme_doctor.parser import parse_markdown
 
                 target = parse_markdown(candidate, set())
-                if fragment.casefold() not in {heading.anchor for heading in target.headings}:
+                target_anchors = {heading.anchor for heading in target.headings}
+                target_anchors.update(anchor.casefold() for anchor in target.explicit_anchors)
+                if fragment.casefold() not in target_anchors:
                     finding = context.finding(
                         "RD003",
                         f"Anchor does not exist in {path_text}: #{fragment}",
